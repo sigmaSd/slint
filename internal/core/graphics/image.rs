@@ -316,6 +316,7 @@ impl ImageCacheKey {
             #[cfg(target_arch = "wasm32")]
             ImageInner::HTMLImage(htmlimage) => Self::URL(htmlimage.source().into()),
             ImageInner::BackendStorage(x) => vtable::VRc::borrow(x).cache_key(),
+            ImageInner::OpenGLTexture { .. } => return None,
         };
         if matches!(key, ImageCacheKey::Invalid) {
             None
@@ -350,6 +351,10 @@ pub enum ImageInner {
     #[cfg(target_arch = "wasm32")]
     HTMLImage(vtable::VRc<OpaqueImageVTable, htmlimage::HTMLImage>),
     BackendStorage(vtable::VRc<OpaqueImageVTable>),
+    OpenGLTexture {
+        texture: u32,
+        size: IntSize,
+    },
 }
 
 impl ImageInner {
@@ -602,6 +607,10 @@ impl Image {
         })
     }
 
+    pub fn from_gl_texture(texture: u32, size: IntSize) -> Self {
+        Image(ImageInner::OpenGLTexture { texture, size })
+    }
+
     /// Returns the size of the Image in pixels.
     pub fn size(&self) -> IntSize {
         match &self.0 {
@@ -613,6 +622,7 @@ impl Image {
             #[cfg(target_arch = "wasm32")]
             ImageInner::HTMLImage(htmlimage) => htmlimage.size().unwrap_or_default(),
             ImageInner::BackendStorage(x) => vtable::VRc::borrow(x).size(),
+            ImageInner::OpenGLTexture { size, .. } => *size,
         }
     }
 
