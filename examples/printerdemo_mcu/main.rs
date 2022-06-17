@@ -32,9 +32,14 @@ impl PrinterQueueData {
     }
 }
 
+#[cfg(not(feature = "from_launcher"))]
 #[mcu_board_support::entry]
 fn main() -> ! {
     mcu_board_support::init();
+    run()
+}
+
+pub fn run() -> ! {
     let main_window = MainWindow::new().unwrap();
     main_window.set_ink_levels(slint::VecModel::from_slice(&[
         InkLevel { color: slint::Color::from_rgb_u8(0, 255, 255), level: 0.40 },
