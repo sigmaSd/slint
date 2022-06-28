@@ -225,11 +225,10 @@ export component ScrollView {
         @children
         x: 2px;
         y: 2px;
-        interactive: false;
         viewport-y <=> vbar.value;
-        viewport-x <=> hbar.value;
+//        viewport-x <=> hbar.value;
         width: parent.width - vbar.width - 4px;
-        height: parent.height - hbar.height - 4px;
+        height: parent.height /* - hbar.height */ - 4px;
     }
     vbar := ScrollBar {
         enabled: root.enabled;
@@ -241,6 +240,7 @@ export component ScrollView {
         maximum: fli.viewport-height - fli.height;
         page-size: fli.height;
     }
+    /*
     hbar := ScrollBar {
         enabled: root.enabled;
         height: 16px;
@@ -251,6 +251,8 @@ export component ScrollView {
         maximum: fli.viewport-width - fli.width;
         page-size: fli.width;
     }
+    */
+
     corner := Rectangle {
         x: fli.width + fli.x;
         y: fli.height + fli.y;
@@ -258,5 +260,4 @@ export component ScrollView {
         width: 16px;
         background: root.enabled ? transparent : Palette.neutralLighter;
     }
-
 }
