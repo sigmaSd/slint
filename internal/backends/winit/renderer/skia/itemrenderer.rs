@@ -24,20 +24,24 @@ struct RenderState {
     alpha: f32,
 }
 
-pub struct SkiaRenderer<'a> {
+pub struct SkiaRenderer<'a, RenderSurface: super::Surface> {
     pub canvas: &'a mut skia_safe::Canvas,
     pub scale_factor: ScaleFactor,
+    pub surface: &'a RenderSurface,
     pub window: &'a i_slint_core::api::Window,
+    pub context: &'a mut skia_safe::gpu::DirectContext,
     state_stack: Vec<RenderState>,
     current_state: RenderState,
     image_cache: &'a ItemCache<Option<skia_safe::Image>>,
     box_shadow_cache: &'a mut SkiaBoxShadowCache,
 }
 
-impl<'a> SkiaRenderer<'a> {
+impl<'a, RenderSurface: super::Surface> SkiaRenderer<'a, RenderSurface> {
     pub fn new(
         canvas: &'a mut skia_safe::Canvas,
         window: &'a i_slint_core::api::Window,
+        surface: &'a RenderSurface,
+        context: &'a mut skia_safe::gpu::DirectContext,
         image_cache: &'a ItemCache<Option<skia_safe::Image>>,
         box_shadow_cache: &'a mut SkiaBoxShadowCache,
     ) -> Self {
@@ -45,6 +49,8 @@ impl<'a> SkiaRenderer<'a> {
             canvas,
             scale_factor: ScaleFactor::new(window.scale_factor()),
             window,
+            context,
+            surface,
             state_stack: vec![],
             current_state: RenderState { alpha: 1.0 },
             image_cache,
@@ -155,6 +161,8 @@ impl<'a> SkiaRenderer<'a> {
                 target_height,
                 image_fit,
                 self.scale_factor,
+                self.surface,
+                self.context,
             )
             .and_then(|skia_image| {
                 match colorize_property.map(|p| p.get()).filter(|c| !c.is_transparent()) {
@@ -239,8 +247,14 @@ impl<'a> SkiaRenderer<'a> {
             let canvas = surface.canvas();
             canvas.clear(skia_safe::Color::TRANSPARENT);
 
-            let mut sub_renderer =
-                SkiaRenderer::new(canvas, &self.window, self.image_cache, self.box_shadow_cache);
+            let mut sub_renderer = SkiaRenderer::new(
+                canvas,
+                &self.window,
+                self.surface,
+                self.context,
+                self.image_cache,
+                self.box_shadow_cache,
+            );
 
             i_slint_core::item_rendering::render_item_children(
                 &mut sub_renderer,
@@ -253,7 +267,7 @@ impl<'a> SkiaRenderer<'a> {
     }
 }
 
-impl<'a> SkiaRenderer<'a> {
+impl<'a, RenderSurface: super::Surface> SkiaRenderer<'a, RenderSurface> {
     /// Draws a `Rectangle` using the `GLItemRenderer`.
     pub fn draw_rect(&mut self, rect: LogicalRect, brush: Brush) {
         let geometry = PhysicalRect::new(PhysicalPoint::default(), rect.size * self.scale_factor);
@@ -270,7 +284,7 @@ impl<'a> SkiaRenderer<'a> {
     }
 }
 
-impl<'a> ItemRenderer for SkiaRenderer<'a> {
+impl<'a, RenderSurface: super::Surface> ItemRenderer for SkiaRenderer<'a, RenderSurface> {
     fn draw_rectangle(
         &mut self,
         rect: std::pin::Pin<&i_slint_core::items::Rectangle>,

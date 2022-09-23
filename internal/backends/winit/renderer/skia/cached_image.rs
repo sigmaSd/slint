@@ -33,6 +33,8 @@ pub(crate) fn as_skia_image(
     target_height: std::pin::Pin<&i_slint_core::Property<LogicalLength>>,
     image_fit: ImageFit,
     scale_factor: ScaleFactor,
+    rendering_surface: &impl super::Surface,
+    context: &mut skia_safe::gpu::DirectContext,
 ) -> Option<skia_safe::Image> {
     let image_inner: &ImageInner = (&image).into();
     match image_inner {
@@ -76,6 +78,18 @@ pub(crate) fn as_skia_image(
         ImageInner::StaticTextures(_) => todo!(),
         ImageInner::BackendStorage(x) => {
             vtable::VRc::borrow(x).downcast::<SkiaCachedImage>().map(|x| x.image.clone())
+        }
+        image @ _ => {
+            rendering_surface.create_backend_texture_from_image(image).and_then(|backend_texture| {
+                skia_safe::image::Image::from_texture(
+                    context,
+                    &backend_texture,
+                    skia_safe::gpu::SurfaceOrigin::BottomLeft,
+                    skia_safe::ColorType::RGBA8888,
+                    skia_safe::AlphaType::Premul,
+                    None,
+                )
+            })
         }
     }
 }
