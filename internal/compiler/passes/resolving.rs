@@ -46,7 +46,6 @@ fn resolve_expression(
 
         let new_expr = match node.kind() {
             SyntaxKind::CallbackConnection => {
-                //FIXME: proper callback support (node is a codeblock)
                 Expression::from_callback_connection(node.clone().into(), &mut lookup_ctx)
             }
             SyntaxKind::Function => Expression::from_function(node.clone().into(), &mut lookup_ctx),
@@ -58,6 +57,10 @@ fn resolve_expression(
             SyntaxKind::BindingExpression => {
                 Expression::from_binding_expression_node(node.clone(), &mut lookup_ctx)
             }
+            SyntaxKind::PropertyChangedCallback => Expression::from_codeblock_node(
+                syntax_nodes::PropertyChangedCallback::from(node.clone()).CodeBlock(),
+                &mut lookup_ctx,
+            ),
             SyntaxKind::TwoWayBinding => {
                 assert!(diag.has_error(), "Two way binding should have been resolved already  (property: {property_name:?})");
                 Expression::Invalid
