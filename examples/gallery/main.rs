@@ -78,3 +78,9 @@ pub fn main() {
 fn slint_android_main(app: android_activity::AndroidApp) {
     main();
 }
+
+#[cfg(target_os = "android")]
+#[no_mangle]
+fn slint_android_main() {
+    main();
+}

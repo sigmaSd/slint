@@ -614,10 +614,20 @@ impl WindowAdapterInternal for WinitWindowAdapter {
         #[cfg(not(target_arch = "wasm32"))]
         self.with_window_handle(&mut |winit_window| {
             match request {
-                corelib::window::InputMethodRequest::Enable { input_type, .. } => winit_window
-                    .set_ime_allowed(matches!(input_type, corelib::items::InputType::Text)),
+                corelib::window::InputMethodRequest::Enable { input_type, .. } => {
+                    #[cfg(target_os = "android")]
+                    if let Some(app) = crate::event_loop::ANDROID_APP.get() {
+                        app.show_soft_input(false);
+                    }
+                    winit_window
+                        .set_ime_allowed(matches!(input_type, corelib::items::InputType::Text));
+                }
                 corelib::window::InputMethodRequest::Disable { .. } => {
-                    winit_window.set_ime_allowed(false)
+                    winit_window.set_ime_allowed(false);
+                    #[cfg(target_os = "android")]
+                    if let Some(app) = crate::event_loop::ANDROID_APP.get() {
+                        app.hide_soft_input(true);
+                    }
                 }
                 corelib::window::InputMethodRequest::SetPosition { position, .. } => {
                     winit_window.set_ime_position(position_to_winit(&position.into()))

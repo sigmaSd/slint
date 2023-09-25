@@ -96,3 +96,9 @@ pub fn main() {
 
     main_window.run().unwrap();
 }
+
+#[cfg(target_os = "android")]
+#[no_mangle]
+fn slint_android_main() {
+    main();
+}
