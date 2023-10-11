@@ -18,8 +18,8 @@ name = "todo"
 slint = { path = "../../../api/rs/slint", default-features = false, features = [
     "std",
     "backend-winit",
-    "renderer-winit-skia",
-    "compat-1-0",
+    "renderer-skia",
+    "compat-1-2",
 ] }
 
 
