@@ -93,7 +93,7 @@ impl crate::fullscreenwindowadapter::FullscreenRenderer for SoftwareRendererAdap
     fn render_and_present(
         &self,
         rotation: RenderingRotation,
-        _draw_mouse_cursor_callback: &dyn Fn(&mut dyn i_slint_core::item_rendering::ItemRenderer),
+        draw_mouse_cursor_callback: &dyn Fn(&mut dyn i_slint_core::item_rendering::ItemRenderer),
         ready_for_next_animation_frame: Box<dyn FnOnce()>,
     ) -> Result<(), PlatformError> {
         self.display.map_back_buffer(&mut |mut pixels| {
@@ -113,7 +113,11 @@ impl crate::fullscreenwindowadapter::FullscreenRenderer for SoftwareRendererAdap
             });
 
             let buffer: &mut [DumbBufferPixel] = bytemuck::cast_slice_mut(pixels.as_mut());
-            self.renderer.render(buffer, self.size.width as usize);
+            self.renderer.render_with_post_render_callback(
+                buffer,
+                self.size.width as usize,
+                Some(draw_mouse_cursor_callback),
+            );
 
             Ok(())
         })?;
