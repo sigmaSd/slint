@@ -35,7 +35,7 @@ pub struct AccessibleItemPropertiesTracker {
 }
 
 impl PropertyDirtyHandler for AccessibleItemPropertiesTracker {
-    fn notify(&self) {
+    fn notify(self: Pin<&Self>) {
         let obj = self.obj;
         cpp!(unsafe [obj as "QObject*"] {
             QTimer::singleShot(0, [obj = QPointer(obj)]() {
@@ -62,7 +62,7 @@ pub struct ValuePropertyTracker {
 }
 
 impl PropertyDirtyHandler for ValuePropertyTracker {
-    fn notify(&self) {
+    fn notify(self: Pin<&Self>) {
         let obj = self.obj;
         cpp!(unsafe [obj as "QObject*"] {
             QTimer::singleShot(0, [ obj = QPointer(obj)]() {
@@ -87,7 +87,7 @@ pub struct LabelPropertyTracker {
 }
 
 impl PropertyDirtyHandler for LabelPropertyTracker {
-    fn notify(&self) {
+    fn notify(self: Pin<&Self>) {
         let obj = self.obj;
         cpp!(unsafe [obj as "QObject*"] {
             QTimer::singleShot(0, [obj = QPointer(obj)]() {
@@ -112,7 +112,7 @@ pub struct DescriptionPropertyTracker {
 }
 
 impl PropertyDirtyHandler for DescriptionPropertyTracker {
-    fn notify(&self) {
+    fn notify(self: Pin<&Self>) {
         let obj = self.obj;
         cpp!(unsafe [obj as "QObject*"] {
             QTimer::singleShot(0, [obj = QPointer(obj)]() {
@@ -137,7 +137,7 @@ pub struct FocusDelegationPropertyTracker {
 }
 
 impl PropertyDirtyHandler for FocusDelegationPropertyTracker {
-    fn notify(&self) {
+    fn notify(self: Pin<&Self>) {
         let obj = self.obj;
         cpp!(unsafe [obj as "QObject*"] {
             QTimer::singleShot(0, [obj = QPointer(obj)]() {
