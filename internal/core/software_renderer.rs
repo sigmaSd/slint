@@ -75,11 +75,11 @@ mod internal {
         /// No rotation
         #[default]
         NoRotation,
-        /// Rotate 90° to the left
+        /// Rotate 90° to the right
         Rotate90,
         /// 180° rotation (upside-down)
         Rotate180,
-        /// Rotate 90° to the right
+        /// Rotate 90° to the left
         Rotate270,
     }
 }
@@ -94,10 +94,10 @@ impl RenderingRotation {
         matches!(self, Self::Rotate90 | Self::Rotate270)
     }
     fn mirror_width(self) -> bool {
-        matches!(self, Self::Rotate90 | Self::Rotate180)
+        matches!(self, Self::Rotate270 | Self::Rotate180)
     }
     fn mirror_height(self) -> bool {
-        matches!(self, Self::Rotate270 | Self::Rotate180)
+        matches!(self, Self::Rotate90 | Self::Rotate180)
     }
     /// Angle of the rotation in degrees
     fn angle(self) -> f32 {
