@@ -1674,7 +1674,8 @@ impl<'a, T: ProcessScene> crate::item_rendering::ItemRenderer for SceneBuilder<'
                     .round()
                     .cast()
                     .transformed(self.rotation);
-                let angle = g.angle() - self.rotation.orientation.angle();
+                let axis_angle = (360. - self.rotation.orientation.angle()) % 360.;
+                let angle = g.angle() - axis_angle;
                 let tan = angle.to_radians().tan().abs();
                 let start = if !tan.is_finite() {
                     255.
