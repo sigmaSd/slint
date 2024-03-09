@@ -244,4 +244,5 @@ Model = native.PyModelBase
 ListModel = models.ListModel
 Model = models.Model
 Timer = native.Timer
-TimerMode = native.TimerMode
+TimerMode = native.TimerMode`
+Struct = native.Struct`

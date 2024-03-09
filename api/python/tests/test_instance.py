@@ -75,11 +75,13 @@ def test_property_access():
         instance.set_property("boolprop", 0)
 
     structval = instance.get_property("structprop")
-    assert isinstance(structval, dict)
-    assert structval == {'title': 'builtin', 'finished': True}
+    assert isinstance(structval, native.PyStruct)
+    assert structval.title == "builtin"
+    assert structval.finished == True
     instance.set_property("structprop", {'title': 'new', 'finished': False})
-    assert instance.get_property("structprop") == {
-        'title': 'new', 'finished': False}
+    structval = instance.get_property("structprop");
+    assert structval.title == "new"
+    assert structval.finished == False
 
     imageval = instance.get_property("imageprop")
     assert imageval.width == 320

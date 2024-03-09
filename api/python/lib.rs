@@ -40,6 +40,7 @@ fn slint(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_class::<brush::PyColor>()?;
     m.add_class::<brush::PyBrush>()?;
     m.add_class::<models::PyModelBase>()?;
+    m.add_class::<value::PyStruct>()?;
     m.add_function(wrap_pyfunction!(run_event_loop, m)?)?;
     m.add_function(wrap_pyfunction!(quit_event_loop, m)?)?;
 
