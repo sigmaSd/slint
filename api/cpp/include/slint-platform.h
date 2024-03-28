@@ -646,9 +646,10 @@ public:
     /// to fill it with pixels. After the line buffer is filled with pixels, your implementation is
     /// free to flush that line to the screen for display.
     template<typename Callback>
-        requires requires(Callback callback) {
-            callback(size_t(0), size_t(0), size_t(0), [&callback](std::span<Rgb565Pixel>) {});
-        }
+    requires requires(Callback callback)
+    {
+        callback(size_t(0), size_t(0), size_t(0), [&callback](std::span<Rgb565Pixel>) {});
+    }
     PhysicalRegion render_by_line(Callback process_line_callback) const
     {
         auto r = cbindgen_private::slint_software_renderer_render_by_line_rgb565(
